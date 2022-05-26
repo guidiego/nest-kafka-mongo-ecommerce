@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GenericController } from 'src/util/generic.controller';
+import { GenericController } from '../generic/generic.controller';
 import { Invoice, InvoiceDocument } from './invoice.schema';
 import { InvoiceService } from './invoice.service';
 
@@ -17,7 +17,7 @@ export class InvoiceController extends GenericController<
   InvoiceDocument
 > {
   constructor(protected readonly service: InvoiceService) {
-    super();
+    super(service);
   }
 
   @Get('order/:orderId')
