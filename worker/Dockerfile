@@ -1,7 +1,7 @@
 FROM node:17-alpine3.14
 
-COPY . /api
-WORKDIR /api
+COPY . /worker
+WORKDIR /worker
 
 RUN yarn install
 RUN yarn build

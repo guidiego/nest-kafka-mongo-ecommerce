@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
+  private baseUrl: string = process.env.API_URL;
+
   constructor(private httpService: HttpService) {}
 
   getInvoiceByOrderId(orderId): Promise<any> {
     return new Promise((resolve) => {
       this.httpService
-        .get(`http://0.0.0.0:3000/invoice/order/${orderId}`)
+        .get(`${this.baseUrl}/invoice/order/${orderId}`)
         .subscribe((response) => {
           resolve(response.data);
         });
@@ -18,7 +20,7 @@ export class AppService {
   sendInvoice(invoiceId: string): Promise<any> {
     return new Promise((resolve) => {
       this.httpService
-        .put(`http://0.0.0.0:3000/invoice/${invoiceId}/send`)
+        .put(`${this.baseUrl}/invoice/${invoiceId}`, { sentAt: new Date() })
         .subscribe((response) => {
           resolve(response.data);
         });
