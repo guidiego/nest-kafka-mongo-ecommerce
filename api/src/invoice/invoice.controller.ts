@@ -5,21 +5,26 @@ import {
   Get,
   UploadedFile,
   UseInterceptors,
-  Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { InvoiceDocument } from './invoice.schema';
+import { GenericController } from 'src/util/generic.controller';
+import { Invoice, InvoiceDocument } from './invoice.schema';
 import { InvoiceService } from './invoice.service';
 
 @Controller({ path: '/invoice' })
-export class InvoiceController {
-  constructor(private readonly invoiceService: InvoiceService) {}
+export class InvoiceController extends GenericController<
+  Invoice,
+  InvoiceDocument
+> {
+  constructor(protected readonly service: InvoiceService) {
+    super();
+  }
 
   @Get('order/:orderId')
   async getInvoiceDetailByOrder(
     @Param('orderId') orderId: string,
   ): Promise<InvoiceDocument> {
-    return await this.invoiceService.getInvoiceByOrderId(orderId);
+    return await this.service.getByOrderId(orderId);
   }
 
   @Post('order/:orderId')
@@ -28,25 +33,9 @@ export class InvoiceController {
     @Param('orderId') orderId: string,
     @UploadedFile() invoiceFile: Express.Multer.File,
   ): Promise<InvoiceDocument> {
-    console.log(invoiceFile);
-    return await this.invoiceService.createInvoice(
+    return await this.service.create({
       orderId,
-      invoiceFile.path + '.pdf',
-    );
-  }
-
-  @Get(':invoiceId')
-  async getInvoiceDetail(
-    @Param('invoiceId') invoiceId: string,
-  ): Promise<InvoiceDocument> {
-    return await this.invoiceService.getInvoiceById(invoiceId);
-  }
-
-  @Put(':invoiceId/send')
-  async sendInvoice(@Param('invoiceId') invoiceId: string) {
-    return await this.invoiceService.updateOrder(invoiceId, {
-      sendAt: new Date(),
+      filePath: invoiceFile.path + '.pdf',
     });
   }
-
 }

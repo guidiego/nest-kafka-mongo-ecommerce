@@ -1,44 +1,24 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Inject, Param, Put } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { Order, OrderDocument } from './order.schema';
 import { OrderService } from './order.service';
+import { GenericController } from '../generic/generic.controller';
+import { Order, OrderDocument } from './order.schema';
 
 @Controller({ path: '/order' })
-export class OrderController {
+export class OrderController extends GenericController<Order, OrderDocument> {
   constructor(
-    private readonly orderService: OrderService,
+    protected readonly service: OrderService,
     @Inject('ClientKafka') private readonly kafkaCli: ClientKafka,
-  ) {}
-
-  @Get()
-  async getOrderList(): Promise<OrderDocument[]> {
-    return await this.orderService.getOrders();
-  }
-
-  @Post()
-  async createOrder(@Body() orderDto: Order): Promise<OrderDocument> {
-    return await this.orderService.createOrder(orderDto);
-  }
-
-  @Get(':id')
-  async getOrderDetail(@Param('id') orderId: string): Promise<OrderDocument> {
-    return await this.orderService.getOrderById(orderId);
+  ) {
+    super(service);
   }
 
   @Put(':id')
-  async updateOrder(
+  async update(
     @Param('id') orderId: string,
     @Body() orderDto: Partial<Order>,
   ): Promise<OrderDocument> {
-    const newOrder = await this.orderService.updateOrder(orderId, orderDto);
+    const newOrder = await super.update(orderId, orderDto);
 
     await this.kafkaCli.emit('order-change-status', newOrder.toJSON());
 

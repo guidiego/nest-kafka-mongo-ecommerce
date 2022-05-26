@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MSchema } from 'mongoose';
-import { Order } from '../order/order.schema';
+import { Document } from 'mongoose';
 
 export type InvoiceDocument = Invoice & Document;
 
@@ -8,17 +7,15 @@ export type InvoiceDocument = Invoice & Document;
 export class Invoice {
   @Prop({
     required: true,
-    type: MSchema.Types.ObjectId,
-    ref: 'Order',
     unique: true,
   })
-  orderId: Order;
+  orderId: string;
 
   @Prop({ required: true })
   filePath: string;
 
   @Prop()
-  sendAt: Date;
+  sendAt?: Date;
 }
 
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);
