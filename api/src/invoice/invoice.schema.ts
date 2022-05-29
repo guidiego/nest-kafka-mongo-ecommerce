@@ -15,7 +15,7 @@ export class Invoice {
   filePath: string;
 
   @Prop()
-  sendAt?: Date;
+  sentAt?: Date;
 }
 
 export const InvoiceSchema = SchemaFactory.createForClass(Invoice);

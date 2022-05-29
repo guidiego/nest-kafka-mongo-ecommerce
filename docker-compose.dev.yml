@@ -1,5 +1,31 @@
 version: "3.9"
 services:
+  api:
+    build: ./api
+    command: yarn start:dev
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      HOST: '0.0.0.0'
+      MONGO_DBNAME: ecommerce
+      MONGO_URL: mongodb://root:root@mongo:27017
+    depends_on:
+      - mongo
+      - kafdrop
+    volumes:
+      - ./src:/api/src
+
+  worker:
+    build: ./worker
+    command: yarn start:dev
+    environment:
+      API_URL: api:3000
+    depends_on:
+      - api
+    volumes:
+      - ./src:/worker/src
+
   mongo:
     image: mongo
     restart: always

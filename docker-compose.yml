@@ -1,5 +1,25 @@
 version: "3.9"
 services:
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      HOST: '0.0.0.0'
+      MONGO_DBNAME: ecommerce
+      MONGO_URL: mongodb://root:root@mongo:27017
+    depends_on:
+      - mongo
+      - kafdrop
+
+  worker:
+    build: ./worker
+    environment:
+      API_URL: api:3000
+    depends_on:
+      - api
+
   mongo:
     image: mongo
     restart: always
