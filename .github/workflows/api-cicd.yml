@@ -1,4 +1,4 @@
-name: Build And Deploy
+name: build-and-test
 on:
   push:
     branches: [ master ]
@@ -6,7 +6,9 @@ on:
 jobs:
   test-api:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: api
     steps:
       - uses: actions/checkout@v3
 
@@ -21,9 +23,12 @@ jobs:
 
       - name: Run Build
         run: yarn build
+
   test-worker:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: worker
     steps:
       - uses: actions/checkout@v3
 
