@@ -7,17 +7,21 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern('order-change-status')
-  async getHello(@Payload() message) {
+  async onOrderChangeStatus(@Payload() message) {
+    // @TODO: Remove Magic String for Shipped
     if (message.value.status !== 'Shipped') {
-      return;
+      return 'skipped';
     }
 
     const invoice = await this.appService.getInvoiceByOrderId(
       message.value._id,
     );
 
-    if (invoice._id) {
-      await this.appService.sendInvoice(invoice._id);
+    if (!invoice._id) {
+      return 'skipped';
     }
+
+    await this.appService.sendInvoice(invoice._id);
+    return 'sent';
   }
 }
